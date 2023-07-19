@@ -1,0 +1,14 @@
+/*マップ中央揃え*/
+.map-op{
+    text-align: center;
+}
+/*iframeの幅設定*/
+iframe{
+    width:calc(100% - 70px);
+    height: 500px;
+    text-align: center;
+}
+/*ヘッダーの処理*/
+div#header {
+    text-align: center;
+}

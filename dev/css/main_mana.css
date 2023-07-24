@@ -12,3 +12,8 @@ iframe{
 div#header {
     text-align: center;
 }
+
+body {
+    background-color: #000000;
+    color: #ffffff; /* テキストの色を白に設定 */
+}

@@ -62,6 +62,7 @@
                 });
         }
 
+
         function getPoints(data) {
             const points = []; // データを格納するための空の配列
 
@@ -87,15 +88,50 @@
             }
         }
 
-        function focusOnState(state) {
+        function fetchData() {
+            // APIを使って非同期データを取得する
+            const endpoint = "https://script.google.com/macros/s/AKfycbwI5ZALKp3wqGAM3wJiewEdmoUwJBHiS6RZGMNEzM1dkG11TSuJoIWUi8B1DU--_jGh/exec";
+
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(jsonData => {
+                    // JSONデータを変数dataに代入する
+                    data = jsonData;
+                    heatmap.setData(getPoints(jsonData)); // getPoints()関数を呼び出してデータを更新する
+                });
+        }
+
+        function focusOnState(stateCode) {
+            document.getElementById("error-message").textContent = "";
+            // データ配列が未定義の場合は処理を中止する
+            if (!data) {
+                console.log("データがまだ利用できません。");
+                return;
+            }
+
+            // データ配列の中身を確認する
+            console.log(data);
+
             // データ配列から州名をマッチングして座標を取得し、マップの位置を合わせる処理
-            const stateData = data.find(item => item.state === state);
+            const stateData = data.find(item => item.state === stateCode);
             if (stateData) {
-                const { lat, lng } = stateData.coordinates; // coordinatesプロパティを指定して座標を取得する
-                map.setCenter({ lat: parseFloat(lat), lng: parseFloat(lng) });
-                map.setZoom(8);
+                const lat = parseFloat(stateData.lat);
+                const lng = parseFloat(stateData.lng);
+
+                // 緯度と経度の値を6桁の小数点以下に丸める
+                const roundedLat = lat.toFixed(6);
+                const roundedLng = lng.toFixed(6);
+
+                map.setCenter({ lat: parseFloat(roundedLat), lng: parseFloat(roundedLng) });
+                map.setZoom(8); // 適切なズームレベルを設定する（例として8を設定）
+            } else {
+                document.getElementById("error-message").textContent = "州のデータが見つかりません。";
             }
         }
+
+
+        // fetchData関数を呼び出してデータを取得する
+        fetchData();
 
 
 
@@ -463,57 +499,58 @@
     <select id="state-selector" class="selector-control" onchange="focusOnState(this.value)">
         <option value="">Select a state</option>
         <!-- アメリカの各州を追加 -->
-        <option value="AL">アラバマ</option>
-        <option value="AK">アラスカ</option>
-        <option value="AZ">アリゾナ</option>
-        <option value="AR">アーカンソー</option>
-        <option value="CA">カリフォルニア</option>
-        <option value="CO">コロラド</option>
-        <option value="CT">コネチカット</option>
-        <option value="DE">デラウェア</option>
-        <option value="FL">フロリダ</option>
-        <option value="GA">ジョージア</option>
-        <option value="HI">ハワイ</option>
-        <option value="ID">アイダホ</option>
-        <option value="IL">イリノイ</option>
-        <option value="IN">インディアナ</option>
-        <option value="IA">アイオワ</option>
-        <option value="KS">カンザス</option>
-        <option value="KY">ケンタッキー</option>
-        <option value="LA">ルイジアナ</option>
-        <option value="ME">メイン</option>
-        <option value="MD">メリーランド</option>
-        <option value="MA">マサチューセッツ</option>
-        <option value="MI">ミシガン</option>
-        <option value="MN">ミネソタ</option>
-        <option value="MS">ミシシッピ</option>
-        <option value="MO">ミズーリ</option>
-        <option value="MT">モンタナ</option>
-        <option value="NE">ネブラスカ</option>
-        <option value="NV">ネバダ</option>
-        <option value="NH">ニューハンプシャー</option>
-        <option value="NJ">ニュージャージー</option>
-        <option value="NM">ニューメキシコ</option>
-        <option value="NY">ニューヨーク</option>
-        <option value="NC">ノースカロライナ</option>
-        <option value="ND">ノースダコタ</option>
-        <option value="OH">オハイオ</option>
-        <option value="OK">オクラホマ</option>
-        <option value="OR">オレゴン</option>
-        <option value="PA">ペンシルベニア</option>
-        <option value="RI">ロードアイランド</option>
-        <option value="SC">サウスカロライナ</option>
-        <option value="SD">サウスダコタ</option>
-        <option value="TN">テネシー</option>
-        <option value="TX">テキサス</option>
-        <option value="UT">ユタ</option>
-        <option value="VT">バーモント</option>
-        <option value="VA">バージニア</option>
-        <option value="WA">ワシントン</option>
-        <option value="WV">ウェストバージニア</option>
-        <option value="WI">ウィスコンシン</option>
-        <option value="WY">ワイオミング</option>
+        <option value="アラバマ">アラバマ</option>
+        <option value="アラスカ">アラスカ</option>
+        <option value="アリゾナ">アリゾナ</option>
+        <option value="アーカンソー">アーカンソー</option>
+        <option value="カリフォルニア">カリフォルニア</option>
+        <option value="コロラド">コロラド</option>
+        <option value="コネチカット">コネチカット</option>
+        <option value="デラウェア">デラウェア</option>
+        <option value="フロリダ">フロリダ</option>
+        <option value="ジョージア">ジョージア</option>
+        <option value="ハワイ">ハワイ</option>
+        <option value="アイダホ">アイダホ</option>
+        <option value="イリノイ">イリノイ</option>
+        <option value="インディアナ">インディアナ</option>
+        <option value="アイオワ">アイオワ</option>
+        <option value="カンザス">カンザス</option>
+        <option value="ケンタッキー">ケンタッキー</option>
+        <option value="ルイジアナ">ルイジアナ</option>
+        <option value="メイン">メイン</option>
+        <option value="メリーランド">メリーランド</option>
+        <option value="マサチューセッツ">マサチューセッツ</option>
+        <option value="ミシガン">ミシガン</option>
+        <option value="ミネソタ">ミネソタ</option>
+        <option value="ミシシッピ">ミシシッピ</option>
+        <option value="ミズーリ">ミズーリ</option>
+        <option value="モンタナ">モンタナ</option>
+        <option value="ネブラスカ">ネブラスカ</option>
+        <option value="ネバダ">ネバダ</option>
+        <option value="ニューハンプシャー">ニューハンプシャー</option>
+        <option value="ニュージャージー">ニュージャージー</option>
+        <option value="ニューメキシコ">ニューメキシコ</option>
+        <option value="ニューヨーク">ニューヨーク</option>
+        <option value="ノースカロライナ">ノースカロライナ</option>
+        <option value="ノースダコタ">ノースダコタ</option>
+        <option value="オハイオ">オハイオ</option>
+        <option value="オクラホマ">オクラホマ</option>
+        <option value="オレゴン">オレゴン</option>
+        <option value="ペンシルベニア">ペンシルベニア</option>
+        <option value="ロードアイランド">ロードアイランド</option>
+        <option value="サウスカロライナ">サウスカロライナ</option>
+        <option value="サウスダコタ">サウスダコタ</option>
+        <option value="テネシー">テネシー</option>
+        <option value="テキサス">テキサス</option>
+        <option value="ユタ">ユタ</option>
+        <option value="バーモント">バーモント</option>
+        <option value="バージニア">バージニア</option>
+        <option value="ワシントン">ワシントン</option>
+        <option value="ウェストバージニア">ウェストバージニア</option>
+        <option value="ウィスコンシン">ウィスコンシン</option>
+        <option value="ワイオミング">ワイオミング</option>
     </select>
+    <p id="error-message" style="color: red;"></p>
 
 </div>
 <div id="style-selector-control" class="map-control">
